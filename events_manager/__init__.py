@@ -22,7 +22,7 @@ _listeners: Dict[str, Dict[Union[CallableType, AsyncCallableType], Tuple[Tuple[A
 
 
 def listen(event_type: Type[Event], listener: Union[CallableType, AsyncCallableType], *args, **kwargs) -> None:
-    logging.debug(f'{listener} listening {e.__name__}')
+    logging.debug(f'{listener} listening {event_type.__name__}')
     listeners = _listeners.get(event_type.__name__) or {}
     listeners[listener] = (args, kwargs)
     _listeners.update({event_type.__name__: listeners})
