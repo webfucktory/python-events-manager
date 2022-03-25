@@ -21,19 +21,19 @@ AsyncCallableType = Callable[[EventType, Any], Awaitable[None]]
 _listeners: Dict[str, Dict[Union[CallableType, AsyncCallableType], Tuple[Tuple[Any, ...], Dict[str, Any]]]] = {}
 
 
-def listen(e: Type[Event], listener: Union[CallableType, AsyncCallableType], *args, **kwargs) -> None:
+def listen(event_type: Type[Event], listener: Union[CallableType, AsyncCallableType], *args, **kwargs) -> None:
     logging.debug(f'{listener} listening {e.__name__}')
-    listeners = _listeners.get(e.__name__) or {}
+    listeners = _listeners.get(event_type.__name__) or {}
     listeners[listener] = (args, kwargs)
-    _listeners.update({e.__name__: listeners})
+    _listeners.update({event_type.__name__: listeners})
 
 
-def unregister(e: Type[Event], listener: Union[CallableType, AsyncCallableType]) -> None:
-    if e.__name__ not in _listeners:
+def unregister(event_type: Type[Event], listener: Union[CallableType, AsyncCallableType]) -> None:
+    if event_type.__name__ not in _listeners:
         return
 
     try:
-        del _listeners[e.__name__][listener]
+        del _listeners[event_type.__name__][listener]
 
     except KeyError:
         pass
@@ -45,9 +45,9 @@ def unregister_all() -> None:
     _listeners = {}
 
 
-def on(e: Type[Event], *args, **kwargs):
+def on(event_type: Type[Event], *args, **kwargs):
     def register(listener: Union[CallableType, AsyncCallableType]) -> Callable[[Event], Awaitable[None]]:
-        listen(e, listener, *args, **kwargs)
+        listen(event_type, listener, *args, **kwargs)
 
         return listener
 
@@ -58,9 +58,9 @@ def emit(e: Event) -> None:
     create_task(__run_listeners(e))
 
 
-def get_listeners(e: Type[Event]) \
+def get_listeners(event_type: Type[Event]) \
         -> Dict[str, Dict[Union[CallableType, AsyncCallableType], Tuple[Tuple[Any, ...], Dict[str, Any]]]]:
-    return _listeners.get(e.__name__, {})
+    return _listeners.get(event_type.__name__, {})
 
 
 async def __run_listeners(e: Event) -> None:
