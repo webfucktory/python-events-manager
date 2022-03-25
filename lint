@@ -1,3 +1,3 @@
 #!/bin/bash
 
-flake8 package_name/ tests/ setup.py
+flake8 events_manager/ tests/ setup.py

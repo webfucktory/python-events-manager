@@ -30,4 +30,7 @@ jobs:
         pip install -r requirements.dev.txt
     - name: Lint with flake8
       run: |
-        flake8 package_name/ tests/ setup.py --count --show-source --statistics
+        flake8 events_manager/ tests/ setup.py --count --show-source --statistics
+    - name: Test with pytest
+      run: |
+        pytest
