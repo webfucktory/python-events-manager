@@ -1,6 +1,12 @@
 from setuptools import find_packages, setup
 
-version = __import__('events_manager').__version__
+# PEP0440 compatible formatted version, see:
+# https://www.python.org/dev/peps/pep-0440/
+#
+# Generic release markers:
+#   X.Y.0   # For first release after an increment in Y
+#   X.Y.Z   # For bugfix releases
+version = '0.1.0'
 
 with open('requirements.txt') as f:
     requirements = [
