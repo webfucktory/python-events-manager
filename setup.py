@@ -1,29 +1,36 @@
 from setuptools import find_packages, setup
 
-# PEP0440 compatible formatted version, see:
-# https://www.python.org/dev/peps/pep-0440/
-#
-# Generic release markers:
-#   X.Y.0   # For first release after an increment in Y
-#   X.Y.Z   # For bugfix releases
-version = '0.1.0'
 
-with open('requirements.txt') as f:
-    requirements = [
-        line.split('#', 1)[0].strip() for line in f.read().splitlines()
-        if not line.strip().startswith('#')
-    ]
+def get_version():
+    with open("events_manager/__init__.py") as f:
+        for line in f.read().splitlines():
+            if line.startswith('__version__'):
+                return line.split('"' if '"' in line else "'")[1]
 
-with open("README.md", "r", encoding="utf-8") as fh:
-    long_description = fh.read()
+        else:
+            raise RuntimeError("Unable to find version string.")
+
+
+def get_requirements():
+    with open("requirements.txt") as f:
+        return [
+            line.split('#', 1)[0].strip() for line in f.read().splitlines()
+            if not line.strip().startswith('#')
+        ]
+
+
+def get_long_description():
+    with open("README.md", encoding="utf-8") as f:
+        return f.read()
+
 
 setup(
     name="events-manager",
-    version=version,
+    version=get_version(),
     author="webfucktory",
     author_email="root@webfucktory.com",
     description="An event system extension for Python",
-    long_description=long_description,
+    long_description=get_long_description(),
     long_description_content_type="text/markdown",
     url="https://github.com/webfucktory/python-events-manager",
     packages=find_packages(),
@@ -38,5 +45,5 @@ setup(
         "Programming Language :: Python :: 3 :: Only",
     ],
     python_requires='>=3.8',
-    install_requires=requirements,
+    install_requires=get_requirements(),
 )
