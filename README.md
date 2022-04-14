@@ -1,10 +1,10 @@
-# events-manager
-
-Python event system support implementation package.
-
 [![Lint & Test](https://github.com/webfucktory/python-events-manager/actions/workflows/lint-test.yml/badge.svg)](https://github.com/webfucktory/python-events-manager/actions/workflows/lint-test.yml)
 [![PyPI version](https://badge.fury.io/py/events-manager.svg)](https://pypi.org/project/events-manager)
 [![Downloads count](https://img.shields.io/pypi/dm/events-manager)](https://pypistats.org/packages/events-manager)
+
+# events-manager
+
+Python event system support implementation package.
 
 ## Getting started
 
