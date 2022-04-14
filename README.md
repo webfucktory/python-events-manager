@@ -2,6 +2,8 @@
 
 Python event system support implementation package.
 
+[![Lint & Test](https://github.com/webfucktory/python-events-manager/actions/workflows/lint-test.yml/badge.svg)](https://github.com/webfucktory/python-events-manager/actions/workflows/lint-test.yml)
+
 ## Getting started
 
 ### Requirements
