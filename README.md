@@ -20,64 +20,82 @@ pip install events-manager
 
 ## Usage
 
-### Creating an event
+### Listening and emitting an Event
+
+Listener is invoked when the event is emitted.
 
 ```python
-from events_manager import Event
+from asyncio import run, sleep
+
+from events_manager import Event, emit, listen
+
 
 class FooEvent(Event):
     pass
-```
 
-### Listening and emitting an Event 
 
-Listen means that when an event of the `type` passed as the `first argument` to the `listen` method is emitted, the 
-`callable` passed as `second argument` will be invoked passing the event emitted. 
+def foo_listener(event: Event):
+    print(f"'foo_listener' invoked with {event}")
 
-```python
-from events_manager import Event, listen, emit
 
-def on_foo_event(event: Event):
-    print(f"Callable invoked on {type(event).__name__}")
-
-if __name__ == '__main__':    
-    listen(FooEvent, on_foo_event)   
-    
-    foo_event = FooEvent()
+async def main():
+    listen(FooEvent, foo_listener)
 
     print("Emitting event...")
-    emit(foo_event)
+    emit(FooEvent())
+
+    # do the other stuff...
+    await sleep(1)
+
+
+if __name__ == '__main__':
+    run(main())
 ```
 
-```bash
+Output:
+
+```
 Emitting event...
-Callable invoked on FooEvent
+'foo_listener' invoked with <__main__.FooEvent object at 0x7fdce6f5a0a0>
 
 Process finished with exit code 0
 ```
 
-The Events Manager supports both `sync` and `async` listeners. 
+The Events Manager supports both `sync` and `async` listeners.
 
 ```python
-from events_manager import Event, listen, emit
-from asyncio import sleep
+from asyncio import run, sleep
 
-async def on_foo_event(event: Event) -> None:
-    await sleep(10)
-    print(f"Awaitable awaited on {type(event).__name__}")
+from events_manager import Event, emit, listen
 
-if __name__ == '__main__':    
-    listen(FooEvent, on_foo_event)
-    
-    foo_event = FooEvent()
-    
+
+class FooEvent(Event):
+    pass
+
+
+async def foo_listener(event: Event):
+    print(f"'foo_listener' invoked with {event}")
+
+
+async def main():
+    listen(FooEvent, foo_listener)
+
     print("Emitting event...")
-    emit(foo_event)
+    emit(FooEvent())
+
+    # do the other stuff...
+    await sleep(1)
+
+
+if __name__ == '__main__':
+    run(main())
 ```
 
-```bash
+Output:
+
+```
 Emitting event...
-Awaitable awaited on FooEvent
+'foo_listener' invoked with <__main__.FooEvent object at 0x7f81e76ad0a0>
 
 Process finished with exit code 0
 ```
@@ -87,33 +105,39 @@ Process finished with exit code 0
 The `listen` method supports also `args` and `kwargs` that will be passed to the listened listener.
 
 ```python
-from __future__ import annotations
-from events_manager import Event, listen, emit
+from asyncio import run, sleep
 
-class Bar:
-    @staticmethod
-    def on_foo_event(event: Event, self: Bar) -> None:
-        self.__do_something(event)
-        
-    def __do_something(self, event: Event) -> None:
-        print(self)
+from events_manager import Event, emit, listen
 
-if __name__ == '__main__':    
-    bar = Bar()
-    print(bar)
-    
-    listen(FooEvent, Bar.on_foo_event, bar)
-    
-    foo_event = FooEvent()
-    
+
+class FooEvent(Event):
+    pass
+
+
+async def foo_listener(event: Event, bar, baz):
+    print(f"'foo_listener' invoked with {event}, {bar} and {baz}")
+
+
+async def main():
+    listen(FooEvent, foo_listener, 'bar', baz='baz')
+
     print("Emitting event...")
-    emit(foo_event)
+    emit(FooEvent())
+
+    # do the other stuff...
+    await sleep(1)
+
+
+if __name__ == '__main__':
+    run(main())
+
 ```
 
-```bash
-<__main__.Bar object at 0x000001E4541FB4C0> 
+Output:
+
+```
 Emitting event...
-<__main__.Bar object at 0x000001E4541FB4C0>
+'foo_listener' invoked with <__main__.FooEvent object at 0x7fdbd0fa50d0>, bar and baz
 
 Process finished with exit code 0
 ```
@@ -123,22 +147,38 @@ Process finished with exit code 0
 Instead of calling `listen` method, you can also use the `@on` decorator.
 
 ```python
+from asyncio import run, sleep
+
 from events_manager import Event, emit, on
 
+
+class FooEvent(Event):
+    pass
+
+
 @on(FooEvent)
-def on_foo_event(event: Event):
-    print(f"Callable invoked on {type(event).__name__}")
+def foo_listener(event: Event):
+    print(f"'foo_listener' invoked with {event}")
 
-if __name__ == '__main__':    
-    foo_event = FooEvent()
 
+async def main():
     print("Emitting event...")
-    emit(foo_event)
+    emit(FooEvent())
+
+    # do the other stuff...
+    await sleep(1)
+
+
+if __name__ == '__main__':
+    run(main())
+
 ```
 
-```bash
+Output:
+
+```
 Emitting event...
-Callable invoked on FooEvent
+'foo_listener' invoked with <__main__.FooEvent object at 0x7fa0a9a47100>
 
 Process finished with exit code 0
 ```
@@ -148,28 +188,47 @@ Process finished with exit code 0
 Call `unregister` method passing the event type that you want to stop listening and the listener.
 
 ```python
+from asyncio import run, sleep
+
 from events_manager import Event, emit, listen, unregister
 
-def on_foo_event(event: Event):
-    print(f"Callable invoked on {type(event).__name__}")
 
-if __name__ == '__main__':    
-    foo_event = FooEvent()
-    
-    listen(FooEvent, on_foo_event)
+class FooEvent(Event):
+    pass
+
+
+def foo_listener(event: Event):
+    print(f"'foo_listener' invoked with {event}")
+
+
+async def main():
+    listen(FooEvent, foo_listener)
 
     print("Emitting first event...")
-    emit(foo_event)
-    
-    unregister(FooEvent, on_foo_event)
-    
+    emit(FooEvent())
+
+    # let the event be processed
+    await sleep(1)
+
+    unregister(FooEvent, foo_listener)
+
     print("Emitting second event...")
-    emit(foo_event)
+    emit(FooEvent())
+
+    # do the other stuff...
+    await sleep(1)
+
+
+if __name__ == '__main__':
+    run(main())
+
 ```
 
-```bash
+Output:
+
+```
 Emitting first event...
-Callable invoked on FooEvent
+'foo_listener' invoked with <__main__.FooEvent object at 0x7f92c79b9070>
 Emitting second event...
 
 Process finished with exit code 0
