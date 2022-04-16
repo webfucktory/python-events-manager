@@ -2,9 +2,9 @@
 [![PyPI version](https://badge.fury.io/py/events-manager.svg)](https://pypi.org/project/events-manager)
 [![Downloads count](https://img.shields.io/pypi/dm/events-manager)](https://pypistats.org/packages/events-manager)
 
-# events-manager
+# Events Manager
 
-Python event system support implementation package.
+Python implementation for the **Events Managment** system (aka [Observer pattern](https://en.wikipedia.org/wiki/Observer_pattern)).
 
 ## Getting started
 
@@ -61,7 +61,7 @@ Emitting event...
 Process finished with exit code 0
 ```
 
-The Events Manager supports both `sync` and `async` listeners.
+### `sync` and `async` listeners
 
 ```python
 from asyncio import run, sleep
@@ -142,7 +142,7 @@ Emitting event...
 Process finished with exit code 0
 ```
 
-### `@on` decorator
+### Register a listener with `@on` decorator
 
 Instead of calling `listen` method, you can also use the `@on` decorator.
 
@@ -183,7 +183,7 @@ Emitting event...
 Process finished with exit code 0
 ```
 
-### Unregister an event listener
+### Unregister a listener
 
 Call `unregister` method passing the event type that you want to stop listening and the listener.
 
