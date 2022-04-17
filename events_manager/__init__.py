@@ -4,7 +4,7 @@
 # Generic release markers:
 #   X.Y.0   # For first release after an increment in Y
 #   X.Y.Z   # For bugfix releases
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 import logging
 from asyncio import CancelledError, create_task, iscoroutinefunction
