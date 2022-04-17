@@ -4,7 +4,7 @@
 
 # Events Manager
 
-Python implementation for the **Events Managment** system (aka [Observer pattern](https://en.wikipedia.org/wiki/Observer_pattern)).
+Python implementation for the **Events Management** system (aka [Observer pattern](https://en.wikipedia.org/wiki/Observer_pattern)).
 
 ## Getting started
 
@@ -34,7 +34,7 @@ class FooEvent(Event):
     pass
 
 
-def foo_listener(event: Event):
+def foo_listener(event: FooEvent):
     print(f"'foo_listener' invoked with {event}")
 
 
@@ -73,7 +73,7 @@ class FooEvent(Event):
     pass
 
 
-async def foo_listener(event: Event):
+async def foo_listener(event: FooEvent):
     print(f"'foo_listener' invoked with {event}")
 
 
@@ -114,7 +114,7 @@ class FooEvent(Event):
     pass
 
 
-async def foo_listener(event: Event, bar, baz):
+async def foo_listener(event: FooEvent, bar, baz):
     print(f"'foo_listener' invoked with {event}, {bar} and {baz}")
 
 
@@ -157,7 +157,7 @@ class FooEvent(Event):
 
 
 @on(FooEvent)
-def foo_listener(event: Event):
+def foo_listener(event: FooEvent):
     print(f"'foo_listener' invoked with {event}")
 
 
@@ -197,7 +197,7 @@ class FooEvent(Event):
     pass
 
 
-def foo_listener(event: Event):
+def foo_listener(event: FooEvent):
     print(f"'foo_listener' invoked with {event}")
 
 
