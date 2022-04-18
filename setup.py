@@ -29,7 +29,7 @@ setup(
     version=get_version(),
     author="webfucktory",
     author_email="root@webfucktory.com",
-    description="An event system extension for Python",
+    description="Python implementation for the Events Management system (aka Observer pattern)",
     long_description=get_long_description(),
     long_description_content_type="text/markdown",
     url="https://github.com/webfucktory/python-events-manager",
