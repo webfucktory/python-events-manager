@@ -4,37 +4,57 @@
 # Generic release markers:
 #   X.Y.0   # For first release after an increment in Y
 #   X.Y.Z   # For bugfix releases
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 
 import logging
 from asyncio import CancelledError, create_task, iscoroutinefunction
-from typing import Any, Awaitable, Callable, Dict, Tuple, Type, TypeVar, Union
+from typing import Any, Awaitable, Callable, Dict, List, Tuple, Type, TypeVar, Union
 
 from .event import Event
 
 EventType = TypeVar('EventType', bound=Event)
 CallableType = Callable[[EventType, Any], None]
 AsyncCallableType = Callable[[EventType, Any], Awaitable[None]]
+ListenerType = Union[CallableType, AsyncCallableType]
+ListenersType = Dict[
+    Type[Event],
+    List[
+        Tuple[
+            Union[CallableType, AsyncCallableType],
+            Tuple[Tuple[Any, ...], Dict[str, Any]],
+        ]
+    ]
+]
 
-_listeners: Dict[Type[Event], Dict[Union[CallableType, AsyncCallableType], Tuple[Tuple[Any, ...], Dict[str, Any]]]] = {}
+_listeners: ListenersType = {}
 
 
-def listen(event_type: Type[Event], listener: Union[CallableType, AsyncCallableType], *args, **kwargs) -> None:
+class ListenerAlreadyExistsError(ValueError):
+    pass
+
+
+def listen(event_type: Type[Event], listener: ListenerType, check_if_exists: bool = False, *args, **kwargs) -> None:
     logging.debug(f'{listener} listening {event_type}')
-    listeners = _listeners.get(event_type) or {}
-    listeners[listener] = (args, kwargs)
+
+    listeners = _listeners.get(event_type) or []
+
+    if check_if_exists:
+        for l_ in listeners:
+            if l_ != listener:
+                continue
+
+            raise ListenerAlreadyExistsError
+
+    listeners.append((listener, (args, kwargs)))
+
     _listeners.update({event_type: listeners})
 
 
-def unregister(event_type: Type[Event], listener: Union[CallableType, AsyncCallableType]) -> None:
+def unregister(event_type: Type[Event], listener: ListenerType) -> None:
     if event_type not in _listeners:
         return
 
-    try:
-        del _listeners[event_type][listener]
-
-    except KeyError:
-        pass
+    _listeners[event_type] = list(filter(lambda x: x[0] != listener, _listeners[event_type]))
 
 
 def unregister_all() -> None:
@@ -44,7 +64,7 @@ def unregister_all() -> None:
 
 
 def on(event_type: Type[Event], *args, **kwargs):
-    def register(listener: Union[CallableType, AsyncCallableType]) -> Callable[[Event], Awaitable[None]]:
+    def register(listener: ListenerType) -> Callable[[Event], Awaitable[None]]:
         listen(event_type, listener, *args, **kwargs)
 
         return listener
@@ -56,19 +76,20 @@ def emit(e: Event) -> None:
     create_task(__run_listeners(e))
 
 
-def get_listeners(event_type: Type[Event]) \
-        -> Dict[str, Dict[Union[CallableType, AsyncCallableType], Tuple[Tuple[Any, ...], Dict[str, Any]]]]:
-    return _listeners.get(event_type, {})
+def get_listeners(
+        event_type: Type[Event]
+) -> List[Tuple[Union[CallableType, AsyncCallableType], Tuple[Tuple[Any, ...], Dict[str, Any]]]]:
+    return _listeners.get(event_type, [])
 
 
 async def __run_listeners(e: Event) -> None:
-    listeners = _listeners.get(e.__class__) or {}
+    listeners = _listeners.get(e.__class__) or []
 
-    for listener, (args, kwargs) in listeners.items():
+    for (listener, (args, kwargs)) in listeners:
         create_task(__run_listener(e, listener, *args, **kwargs))
 
 
-async def __run_listener(e: Event, listener: Union[CallableType, AsyncCallableType], *args, **kwargs) -> None:
+async def __run_listener(e: Event, listener: ListenerType, *args, **kwargs) -> None:
     # noinspection PyBroadException
     try:
         if iscoroutinefunction(listener):
