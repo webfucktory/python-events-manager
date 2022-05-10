@@ -39,11 +39,9 @@ def listen(event_type: Type[Event], listener: ListenerType, check_if_exists: boo
     listeners = _listeners.get(event_type) or []
 
     if check_if_exists:
-        for l_ in listeners:
-            if l_ != listener:
-                continue
-
-            raise ListenerAlreadyExistsError
+        for (l_, _) in listeners:
+            if l_ == listener:
+                raise ListenerAlreadyExistsError
 
     listeners.append((listener, (args, kwargs)))
 
