@@ -4,7 +4,7 @@
 
 # Events Manager
 
-Python implementation for the **Events Management** system (aka [Observer pattern](https://en.wikipedia.org/wiki/Observer_pattern)).
+Python implementation of the **Events Management** system (aka [Observer pattern](https://en.wikipedia.org/wiki/Observer_pattern)).
 
 ## Getting started
 
