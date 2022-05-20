@@ -119,7 +119,7 @@ async def foo_listener(event: FooEvent, bar, baz):
 
 
 async def main():
-    listen(FooEvent, foo_listener, 'bar', baz='baz')
+    listen(FooEvent, foo_listener, False, 'bar', baz='baz')
 
     print("Emitting event...")
     emit(FooEvent())
