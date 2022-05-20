@@ -71,7 +71,7 @@ def on(event_type: Type[Event], *args, **kwargs):
 
 
 def emit(e: Event) -> None:
-    create_task(__run_listeners(e))
+    create_task(_run_listeners(e))
 
 
 def get_listeners(
@@ -80,14 +80,14 @@ def get_listeners(
     return _listeners.get(event_type, [])
 
 
-async def __run_listeners(e: Event) -> None:
+async def _run_listeners(e: Event) -> None:
     listeners = _listeners.get(e.__class__) or []
 
     for (listener, (args, kwargs)) in listeners:
-        create_task(__run_listener(e, listener, *args, **kwargs))
+        create_task(_run_listener(e, listener, *args, **kwargs))
 
 
-async def __run_listener(e: Event, listener: ListenerType, *args, **kwargs) -> None:
+async def _run_listener(e: Event, listener: ListenerType, *args, **kwargs) -> None:
     # noinspection PyBroadException
     try:
         if iscoroutinefunction(listener):
