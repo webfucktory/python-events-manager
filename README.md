@@ -234,6 +234,20 @@ Emitting second event...
 Process finished with exit code 0
 ```
 
+## Development
+
+### Run Tests
+
+```shell script
+./test
+```
+
+### Style Check
+
+```shell script
+./lint
+```
+
 ## License
 
 Distributed under the MIT License. See `LICENSE` file for more information.
