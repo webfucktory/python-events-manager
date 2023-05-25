@@ -71,7 +71,7 @@ def on(event_type: Type[Event], *args, **kwargs):
 
 
 def emit(e: Event) -> None:
-    task = create_task(__run_listeners(e))
+    task = create_task(_run_listeners(e))
     
     _background_tasks.add(task)
     
@@ -84,11 +84,11 @@ def get_listeners(
     return _listeners.get(event_type, [])
 
 
-async def __run_listeners(e: Event) -> None:
+async def _run_listeners(e: Event) -> None:
     listeners = _listeners.get(e.__class__) or []
 
     for (listener, (args, kwargs)) in listeners:
-        task = create_task(__run_listener(e, listener, *args, **kwargs))
+        task = create_task(_run_listener(e, listener, *args, **kwargs))
         _background_tasks.add(task)
         task.add_done_callback(_background_tasks.discard)
 
