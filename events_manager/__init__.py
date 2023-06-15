@@ -72,7 +72,7 @@ def on(event_type: Type[Event], *args, **kwargs):
 
 def emit(e: Event) -> None:
     logging.debug(f'emitting {e.__class__}: {e}')
-    
+
     task = create_task(_run_listeners(e))
     _background_tasks.add(task)
     task.add_done_callback(_background_tasks.discard)
